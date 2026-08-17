@@ -13,21 +13,22 @@ from scripts.calculate import load_lookup_table, Generator_for_info, apply_fusio
 
 
 def main():
-    lut_filepath = " "
-    context_file = " "
-    infrared_dir = " "
-    visible_dir = " "
-    save_dir = " "
+    lut_filepath = "ckpts/fine_tuned_lut.npy"
+    context_file = "ckpts/generator_context.pth"
+    infrared_dir = "dataset/test/Infrared"
+    visible_dir = "dataset/test/Visible"
+    save_dir = "results/test"
     os.makedirs(save_dir, exist_ok=True)
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    lut = load_lookup_table(lut_filepath).to(device)
+    lut = load_lookup_table(lut_filepath)
     if lut is None:
         return
+    lut = lut.to(device)
 
     get_context = Generator_for_info()
-    get_context.load_state_dict(torch.load(context_file))
+    get_context.load_state_dict(torch.load(context_file, map_location=device))
     get_context = get_context.to(device)
     get_context.eval()
 
@@ -90,4 +91,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

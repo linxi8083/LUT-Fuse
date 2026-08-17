@@ -15,6 +15,10 @@ from scripts.loss_lut import fusion_loss
 from itertools import chain
 from scripts.calculate import OptimizableLUT, Generator_for_info, apply_fusion_4d_with_interpolation
 
+DATA_ROOT = "dataset"
+LUT_INIT = "ckpts/fine_tuned_lut_original.npy"
+CONTEXT_INIT = "ckpts/generator_context_original.pth"
+
 cuda = True if torch.cuda.is_available() else False
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
@@ -222,7 +226,6 @@ def save_generator_context(generator_context, save_path="generator_context.pth")
 def parse_args():
     parser = argparse.ArgumentParser(description="Fine-tune LUT-Fuse")
     parser.add_argument("--experiment", required=True)
-    parser.add_argument("--data-root", required=True)
     parser.add_argument("--output-root", default="experiments")
     parser.add_argument("--epochs", type=int, default=1)
     parser.add_argument("--batch-size", type=int, default=1)
@@ -230,8 +233,6 @@ def parse_args():
     parser.add_argument("--learning-rate", type=float, default=5e-5)
     parser.add_argument("--crop-size", type=int, default=128)
     parser.add_argument("--resume", default=None)
-    parser.add_argument("--lut-init", default="ckpts/fine_tuned_lut_original.npy")
-    parser.add_argument("--context-init", default="ckpts/generator_context_original.pth")
     return parser.parse_args()
 
 
@@ -263,8 +264,8 @@ if __name__ == "__main__":
     tb_writer = SummaryWriter(log_dir=file_log_path)
 
     DEVICE = torch.device("cuda")
-    train_root = os.path.join(args.data_root, "train")
-    test_root = os.path.join(args.data_root, "test")
+    train_root = os.path.join(DATA_ROOT, "train")
+    test_root = os.path.join(DATA_ROOT, "test")
     visible_path = os.path.join(train_root, "Visible")
     infrared_path = os.path.join(train_root, "Infrared")
     train_fusion_path = os.path.join(train_root, "Fuse_ref")
@@ -274,10 +275,10 @@ if __name__ == "__main__":
     ensure_dataset([visible_path, infrared_path, train_fusion_path,
                     test_visible_path, test_infrared_path, test_fusion_path])
 
-    lut_tensor = torch.tensor(np.load(args.lut_init).astype(np.float32), device=DEVICE)
+    lut_tensor = torch.tensor(np.load(LUT_INIT).astype(np.float32), device=DEVICE)
     lut = OptimizableLUT(lut_tensor)
     Generator_context = Generator_for_info().to(DEVICE)
-    Generator_context.load_state_dict(torch.load(args.context_init, map_location=DEVICE))
+    Generator_context.load_state_dict(torch.load(CONTEXT_INIT, map_location=DEVICE))
 
     start_epoch = 0
     optimizer_state = None
