@@ -17,7 +17,7 @@ def main():
     context_file = "ckpts/generator_context.pth"
     infrared_dir = "dataset/test/Infrared"
     visible_dir = "dataset/test/Visible"
-    save_dir = "results/test"
+    save_dir = "results/author_pretrained/LLVIP"
     os.makedirs(save_dir, exist_ok=True)
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
