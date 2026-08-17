@@ -265,15 +265,15 @@ if __name__ == "__main__":
 
     DEVICE = torch.device("cuda")
     train_root = os.path.join(DATA_ROOT, "train")
-    test_root = os.path.join(DATA_ROOT, "test")
+    val_root = os.path.join(DATA_ROOT, "val")
     visible_path = os.path.join(train_root, "Visible")
     infrared_path = os.path.join(train_root, "Infrared")
     train_fusion_path = os.path.join(train_root, "Fuse_ref")
-    test_visible_path = os.path.join(test_root, "Visible")
-    test_infrared_path = os.path.join(test_root, "Infrared")
-    test_fusion_path = os.path.join(test_root, "Fuse_ref")
+    val_visible_path = os.path.join(val_root, "Visible")
+    val_infrared_path = os.path.join(val_root, "Infrared")
+    val_fusion_path = os.path.join(val_root, "Fuse_ref")
     ensure_dataset([visible_path, infrared_path, train_fusion_path,
-                    test_visible_path, test_infrared_path, test_fusion_path])
+                    val_visible_path, val_infrared_path, val_fusion_path])
 
     lut_tensor = torch.tensor(np.load(LUT_INIT).astype(np.float32), device=DEVICE)
     lut = OptimizableLUT(lut_tensor)
@@ -307,9 +307,9 @@ if __name__ == "__main__":
                                                num_workers=nw,
                                                collate_fn=train_dataset.collate_fn)
 
-    val_dataset = DistillDataSet(visible_path=test_visible_path,
-                                infrared_path=test_infrared_path,
-                                other_fuse_path=test_fusion_path,
+    val_dataset = DistillDataSet(visible_path=val_visible_path,
+                                infrared_path=val_infrared_path,
+                                other_fuse_path=val_fusion_path,
                                 phase="val",
                                 transform=data_transform["val"])
     val_loader = torch.utils.data.DataLoader(val_dataset,

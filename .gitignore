@@ -6,3 +6,6 @@ experiments/
 finetune_lut_exp/
 tmp/
 实验要求.md
+LLVIP/
+dataset/
+results/
